@@ -41,7 +41,7 @@ struct
            in
            Chdir (dn, t))
         ; "setenv",
-          (let%map k = string
+          (let%map k = Dune_lang.Decoder.string
            and v = string
            and t = t
            in
@@ -139,7 +139,7 @@ struct
     | Run (a, xs) ->
       List (atom "run" :: program a :: List.map xs ~f:string)
     | Chdir (a, r) -> List [atom "chdir" ; path a ; encode r]
-    | Setenv (k, v, r) -> List [atom "setenv" ; string k ; string v ; encode r]
+    | Setenv (k, v, r) -> List [atom "setenv" ; atom k ; string v ; encode r]
     | Redirect (outputs, fn, r) ->
       List [ atom (sprintf "with-%s-to" (Outputs.to_string outputs))
            ; path fn
@@ -219,7 +219,7 @@ module Make_mapper
     | Chdir (fn, t) ->
       Chdir (f_path ~dir fn, f t ~dir:fn ~f_program ~f_string ~f_path)
     | Setenv (var, value, t) ->
-      Setenv (f_string ~dir var, f_string ~dir value, f t ~dir ~f_program ~f_string ~f_path)
+      Setenv (var, f_string ~dir value, f t ~dir ~f_program ~f_string ~f_path)
     | Redirect (outputs, fn, t) ->
       Redirect (outputs, f_path ~dir fn, f t ~dir ~f_program ~f_string ~f_path)
     | Ignore (outputs, t) ->
@@ -473,8 +473,7 @@ module Unexpanded = struct
         let fn = E.path ~dir ~f fn in
         Chdir (fn, expand t ~dir:fn ~map_exe ~f)
       | Setenv (var, value, t) ->
-        Setenv (E.string ~dir ~f var, E.string ~dir ~f value,
-                expand t ~dir ~map_exe ~f)
+        Setenv (var, E.string ~dir ~f value, expand t ~dir ~map_exe ~f)
       | Redirect (outputs, fn, t) ->
         Redirect (outputs, E.path ~dir ~f fn, expand t ~dir ~map_exe ~f)
       | Ignore (outputs, t) ->
@@ -569,8 +568,7 @@ module Unexpanded = struct
              This is not allowed by dune"
       end
     | Setenv (var, value, t) ->
-      Setenv (E.string ~dir ~f var, E.string ~dir ~f value,
-              partial_expand t ~dir ~map_exe ~f)
+      Setenv (var, E.string ~dir ~f value, partial_expand t ~dir ~map_exe ~f)
     | Redirect (outputs, fn, t) ->
       Redirect (outputs, E.path ~dir ~f fn, partial_expand t ~dir ~map_exe ~f)
     | Ignore (outputs, t) ->

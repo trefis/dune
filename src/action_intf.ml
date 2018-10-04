@@ -14,6 +14,8 @@ module Diff_mode = struct
     | Text_jbuild (** diffing but no newline normalization *)
 end
 
+type string_literal = string
+
 module type Ast = sig
   type program
   type path
@@ -33,7 +35,7 @@ module type Ast = sig
   type t =
     | Run            of program * string list
     | Chdir          of path * t
-    | Setenv         of string * string * t
+    | Setenv         of string_literal * string * t
     | Redirect       of Outputs.t * path * t
     | Ignore         of Outputs.t * t
     | Progn          of t list
@@ -61,7 +63,7 @@ module type Helpers = sig
 
   val run : program -> string list -> t
   val chdir : path -> t -> t
-  val setenv : string -> string -> t -> t
+  val setenv : string_literal -> string -> t -> t
   val with_stdout_to : path -> t -> t
   val with_stderr_to : path -> t -> t
   val with_outputs_to : path -> t -> t
