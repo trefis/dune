@@ -837,6 +837,14 @@
    (progn (run %{exe:cram.exe} -test run.t) (diff? run.t run.t.corrected)))))
 
 (alias
+ (name setenv)
+ (deps (package dune) (source_tree test-cases/setenv))
+ (action
+  (chdir
+   test-cases/setenv
+   (progn (run %{exe:cram.exe} -test run.t) (diff? run.t run.t.corrected)))))
+
+(alias
  (name several-packages)
  (deps (package dune) (source_tree test-cases/several-packages))
  (action
@@ -1083,6 +1091,7 @@
   (alias scope-bug)
   (alias scope-ppx-bug)
   (alias select)
+  (alias setenv)
   (alias several-packages)
   (alias shadow-bindings)
   (alias stdlib-compilation)
@@ -1193,6 +1202,7 @@
   (alias reporting-of-cycles)
   (alias scope-bug)
   (alias select)
+  (alias setenv)
   (alias several-packages)
   (alias shadow-bindings)
   (alias stdlib-compilation)

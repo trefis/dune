@@ -1,0 +1,3 @@
+(rule
+ (targets toto)
+ (action (setenv %{prout} pouet (echo "done."))))
